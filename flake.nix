@@ -3,13 +3,16 @@
 
   outputs = inputs: let
     system = "x86_64-linux";
-    pkgs = import inputs.nixpkgs {inherit system;};
+    pkgs = import inputs.nixpkgs {
+      inherit system;
+      config = {allowUnfree = true;};
+    };
   in {
     devShells.${system}.default = pkgs.mkShell {
       packages = with pkgs; [
         go
         php
-        phpactor
+        intelephense
 
         (pkgs.writers.writeBashBin "aoc" ''
           export $(grep -v '^#' .env | xargs)

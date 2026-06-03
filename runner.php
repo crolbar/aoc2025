@@ -58,4 +58,4 @@ if ($argv[1] == "new") {
 
 
 $name = getFmtDay($argv[1]);
-exec("go run $name.go $name.input");
+passthru("go run $name.go $name.input " . join(" ", array_slice($argv, 2)));
