@@ -1,7 +1,6 @@
 package main
 
 import (
-	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -18,72 +17,9 @@ func main() {
 		isPartTwo = os.Args[2] == "2"
 	}
 
-	if isPartTwo {
-		part2(string(c))
-	} else {
-		part1(string(c))
-	}
-}
-
-func part2(c string) {
 	n := 50
 	password := 0
-	rotations := strings.Split(c, "\n")
-
-	for _, rotation := range rotations {
-		if len(rotation) == 0 {
-			continue
-		}
-		direction := rotation[0]
-
-		numRotations, err := strconv.ParseInt(rotation[1:], 10, 32)
-		if err != nil {
-			panic(err)
-		}
-
-		password += int(math.Floor(float64(numRotations / 100)))
-
-		tmpN := n
-
-		switch direction {
-		case 'L':
-			tmpN = n - (int(numRotations) % 100)
-		case 'R':
-			tmpN = n + (int(numRotations) % 100)
-		default:
-			panic("invalid direction")
-		}
-
-		if tmpN > 99 {
-			tmpN = tmpN - 100
-			if tmpN != 0 {
-				password += 1
-			}
-		}
-
-		if tmpN < 0 {
-			tmpN = tmpN + 100
-			if n != 0 {
-				password += 1
-			}
-		}
-
-		println("rotated at: ", tmpN)
-		if tmpN == 0 {
-			password += 1
-		}
-
-		n = tmpN
-	}
-
-	// println(string(c))
-	println(password)
-}
-
-func part1(c string) {
-	n := 50
-	password := 0
-	rotations := strings.Split(c, "\n")
+	rotations := strings.Split(string(c), "\n")
 
 	for _, rotation := range rotations {
 		if len(rotation) == 0 {
@@ -104,6 +40,12 @@ func part1(c string) {
 			tmp := raw
 			for tmp < 0 {
 				tmp = 100 + tmp
+				if isPartTwo {
+					if n == 0 && tmp >= 0 {
+						continue
+					}
+					password += 1
+				}
 			}
 
 			if tmp < 0 || tmp > 99 {
@@ -117,6 +59,12 @@ func part1(c string) {
 			tmp := raw
 			for tmp > 99 {
 				tmp = tmp - 100
+				if isPartTwo {
+					if tmp == 0 {
+						continue
+					}
+					password += 1
+				}
 			}
 
 			if tmp < 0 || tmp > 99 {
