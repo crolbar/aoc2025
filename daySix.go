@@ -32,7 +32,9 @@ func main() {
 		}
 	}
 
-	getNextNum := func(str string) int {
+	getNextNum := func(ri int, ci int) int {
+		str := lines[ri][ci:]
+
 		s := strings.TrimSpace(str)
 
 		nextWhiteSpace := len(s)
@@ -51,6 +53,23 @@ func main() {
 		return n
 	}
 
+	if isPartTwo {
+		getNextNum = func(ri int, ci int) int {
+			var str strings.Builder
+
+			for i := 0; i < nLines-1; i++ {
+				str.WriteByte(lines[i][ci+ri])
+			}
+
+			n, err := strconv.Atoi(strings.TrimSpace(str.String()))
+			if err != nil {
+				panic(err)
+			}
+
+			return n
+		}
+	}
+
 	ci := 0
 	for range numOps {
 		op := lastLine[ci]
@@ -59,17 +78,7 @@ func main() {
 			opRes = 1
 		}
 
-		// fmt.Println(string(op))
-		for ri := nLines - 2; ri >= 0; ri-- {
-			n := getNextNum(lines[ri][ci:])
-			if op == '+' {
-				opRes += n
-			} else if op == '*' {
-				opRes *= n
-			}
-		}
-
-		nextOpIdx := lineLen - 1
+		nextOpIdx := lineLen
 		for i := ci + 1; i < lineLen; i++ {
 			if lastLine[i] == '+' || lastLine[i] == '*' {
 				nextOpIdx = i
@@ -77,11 +86,30 @@ func main() {
 			}
 		}
 
+		numLen := nextOpIdx - ci
+		if nextOpIdx != lineLen {
+			numLen -= 1
+		}
+
+		ri := nLines - 2
+		if isPartTwo {
+			ri = numLen - 1
+		}
+
+		for ; ri >= 0; ri-- {
+			n := getNextNum(ri, ci)
+			if op == '+' {
+				opRes += n
+			} else if op == '*' {
+				opRes *= n
+			}
+		}
+
 		ci = nextOpIdx
 		out += opRes
 
-		// fmt.Println("res", opRes)
-		// fmt.Println()
+		fmt.Println("res", opRes)
+		fmt.Println()
 	}
 
 	fmt.Printf("out: %d\n", out)
